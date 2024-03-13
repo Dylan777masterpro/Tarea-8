@@ -1,0 +1,153 @@
+class Libro:
+    def __init__(self, titulo, autor):
+        self.titulo = titulo
+        self.autor = autor
+        self.rentado = False
+
+    def rentar_libro(self):
+        self.rentado = True
+
+    def devolver_libro(self):
+        self.rentado = False
+
+    def mostrar_informacion(self):
+        print("Título:", self.titulo)
+        print("Autor:", self.autor)
+        print("Rentado:", "Sí" if self.rentado else "No")
+        print("------------------------")
+
+
+class Usuario:
+    def __init__(self, nombre):
+        self.nombre = nombre
+        self.libros_rentados = []
+
+    def rentar_libro(self, libro):
+        self.libros_rentados.append(libro)
+        libro.rentar_libro()
+
+    def devolver_libro(self, libro):
+        self.libros_rentados.remove(libro)
+        libro.devolver_libro()
+
+    def mostrar_informacion(self):
+        print("Nombre del usuario:", self.nombre)
+        print("Libros rentados:")
+        for libro in self.libros_rentados:
+            libro.mostrar_informacion()
+
+
+class Libreria:
+    def __init__(self):
+        self.usuarios = []
+        self.libros = []
+
+    def registrar_usuario(self, usuario):
+        self.usuarios.append(usuario)
+
+    def registrar_libro(self, libro):
+        self.libros.append(libro)
+
+    def realizar_renta(self, usuario, libro):
+        if not libro.rentado:
+            usuario.rentar_libro(libro)
+            print("Libro rentado con éxito.")
+        else:
+            print("El libro ya está rentado por otro usuario.")
+
+    def listar_usuarios_registrados(self):
+        print("Usuarios registrados:")
+        for usuario in self.usuarios:
+            print("Nombre:", usuario.nombre)
+            print("------------------------")
+
+    def listar_libros_registrados(self):
+        print("Libros registrados:")
+        for libro in self.libros:
+            libro.mostrar_informacion()
+
+    def listar_usuarios_con_libros(self):
+        print("Usuarios con al menos un libro:")
+        for usuario in self.usuarios:
+            if usuario.libros_rentados:
+                usuario.mostrar_informacion()
+                print("=========================")
+
+    def listar_libros_no_rentados(self):
+        print("Libros no rentados:")
+        for libro in self.libros:
+            if not libro.rentado:
+                libro.mostrar_informacion()
+
+    def listar_libros_rentados(self):
+        print("Libros rentados:")
+        for libro in self.libros:
+            if libro.rentado:
+                libro.mostrar_informacion()
+
+
+def main():
+    libreria = Libreria()
+
+    while True:
+        print("Menú:")
+        print("1. Registrar usuario")
+        print("2. Registrar libro")
+        print("3. Realizar renta")
+        print("4. Listar usuarios registrados")
+        print("5. Listar libros registrados")
+        print("6. Listar usuarios con libros")
+        print("7. Listar libros no rentados")
+        print("8. Listar libros rentados")
+        print("9. Salir")
+
+        opcion = int(input("Seleccione una opción: "))
+
+        if opcion == 1:
+            nombre_usuario = input("Ingrese el nombre del usuario: ")
+            libreria.registrar_usuario(Usuario(nombre_usuario))
+            print("Usuario registrado con éxito.")
+
+        elif opcion == 2:
+            titulo_libro = input("Ingrese el título del libro: ")
+            autor_libro = input("Ingrese el autor del libro: ")
+            libreria.registrar_libro(Libro(titulo_libro, autor_libro))
+            print("Libro registrado con éxito.")
+
+        elif opcion == 3:
+            nombre_renta = input("Ingrese el nombre del usuario: ")
+            titulo_renta = input("Ingrese el título del libro a rentar: ")
+
+            usuario_renta = next((usuario for usuario in libreria.usuarios if usuario.nombre == nombre_renta), None)
+            libro_renta = next((libro for libro in libreria.libros if libro.titulo == titulo_renta), None)
+
+            if usuario_renta and libro_renta:
+                libreria.realizar_renta(usuario_renta, libro_renta)
+            else:
+                print("Usuario o libro no encontrados.")
+
+        elif opcion == 4:
+            libreria.listar_usuarios_registrados()
+
+        elif opcion == 5:
+            libreria.listar_libros_registrados()
+
+        elif opcion == 6:
+            libreria.listar_usuarios_con_libros()
+
+        elif opcion == 7:
+            libreria.listar_libros_no_rentados()
+
+        elif opcion == 8:
+            libreria.listar_libros_rentados()
+
+        elif opcion == 9:
+            print("Saliendo del programa. ¡Hasta luego!")
+            break
+
+        else:
+            print("Opción no válida. Inténtelo de nuevo.")
+
+
+if __name__ == "__main__":
+    main()
