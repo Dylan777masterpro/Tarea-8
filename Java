@@ -1,0 +1,247 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Libro {
+    private String titulo;
+    private String autor;
+    private boolean rentado;
+
+    public Libro(String titulo, String autor) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.rentado = false;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getAutor() {
+        return autor;
+    }
+
+    public boolean isRentado() {
+        return rentado;
+    }
+
+    public void rentarLibro() {
+        rentado = true;
+    }
+
+    public void devolverLibro() {
+        rentado = false;
+    }
+
+    public void mostrarInformacion() {
+        System.out.println("Título: " + titulo);
+        System.out.println("Autor: " + autor);
+        System.out.println("Rentado: " + (rentado ? "Sí" : "No"));
+        System.out.println("------------------------");
+    }
+}
+
+class Usuario {
+    private String nombre;
+    private ArrayList<Libro> librosRentados;
+
+    public Usuario(String nombre) {
+        this.nombre = nombre;
+        this.librosRentados = new ArrayList<>();
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public ArrayList<Libro> getLibrosRentados() {
+        return librosRentados;
+    }
+
+    public void rentarLibro(Libro libro) {
+        librosRentados.add(libro);
+        libro.rentarLibro();
+    }
+
+    public void devolverLibro(Libro libro) {
+        librosRentados.remove(libro);
+        libro.devolverLibro();
+    }
+
+    public void mostrarInformacion() {
+        System.out.println("Nombre del usuario: " + nombre);
+        System.out.println("Libros rentados:");
+
+        for (Libro libro : librosRentados) {
+            libro.mostrarInformacion();
+        }
+    }
+}
+
+class Libreria {
+    private ArrayList<Usuario> usuarios;
+    private ArrayList<Libro> libros;
+
+    public Libreria() {
+        this.usuarios = new ArrayList<>();
+        this.libros = new ArrayList<>();
+    }
+
+    public void registrarUsuario(Usuario usuario) {
+        usuarios.add(usuario);
+    }
+
+    public void registrarLibro(Libro libro) {
+        libros.add(libro);
+    }
+
+    public void realizarRenta(Usuario usuario, Libro libro) {
+        if (!libro.isRentado()) {
+            usuario.rentarLibro(libro);
+            System.out.println("Libro rentado con éxito.");
+        } else {
+            System.out.println("El libro ya está rentado por otro usuario.");
+        }
+    }
+
+    public void listarUsuariosRegistrados() {
+        System.out.println("Usuarios registrados:");
+        for (Usuario usuario : usuarios) {
+            System.out.println("Nombre: " + usuario.getNombre());
+            System.out.println("------------------------");
+        }
+    }
+
+    public void listarLibrosRegistrados() {
+        System.out.println("Libros registrados:");
+        for (Libro libro : libros) {
+            libro.mostrarInformacion();
+        }
+    }
+
+    public void listarUsuariosConLibros() {
+        System.out.println("Usuarios con al menos un libro:");
+        for (Usuario usuario : usuarios) {
+            if (!usuario.getLibrosRentados().isEmpty()) {
+                usuario.mostrarInformacion();
+                System.out.println("=========================");
+            }
+        }
+    }
+
+    public void listarLibrosNoRentados() {
+        System.out.println("Libros no rentados:");
+        for (Libro libro : libros) {
+            if (!libro.isRentado()) {
+                libro.mostrarInformacion();
+            }
+        }
+    }
+
+    public void listarLibrosRentados() {
+        System.out.println("Libros rentados:");
+        for (Libro libro : libros) {
+            if (libro.isRentado()) {
+                libro.mostrarInformacion();
+            }
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Libreria libreria = new Libreria();
+
+        while (true) {
+            System.out.println("Menú:");
+            System.out.println("1. Registrar usuario");
+            System.out.println("2. Registrar libro");
+            System.out.println("3. Realizar renta");
+            System.out.println("4. Listar usuarios registrados");
+            System.out.println("5. Listar libros registrados");
+            System.out.println("6. Listar usuarios con libros");
+            System.out.println("7. Listar libros no rentados");
+            System.out.println("8. Listar libros rentados");
+            System.out.println("9. Salir");
+            System.out.print("Seleccione una opción: ");
+
+            int opcion = scanner.nextInt();
+            scanner.nextLine(); // Consumir el salto de línea
+
+            switch (opcion) {
+                case 1:
+                    System.out.print("Ingrese el nombre del usuario: ");
+                    String nombreUsuario = scanner.nextLine();
+                    libreria.registrarUsuario(new Usuario(nombreUsuario));
+                    System.out.println("Usuario registrado con éxito.");
+                    break;
+
+                case 2:
+                    System.out.print("Ingrese el título del libro: ");
+                    String tituloLibro = scanner.nextLine();
+                    System.out.print("Ingrese el autor del libro: ");
+                    String autorLibro = scanner.nextLine();
+                    libreria.registrarLibro(new Libro(tituloLibro, autorLibro));
+                    System.out.println("Libro registrado con éxito.");
+                    break;
+
+                case 3:
+                    System.out.print("Ingrese el nombre del usuario: ");
+                    String nombreRenta = scanner.nextLine();
+                    System.out.print("Ingrese el título del libro a rentar: ");
+                    String tituloRenta = scanner.nextLine();
+
+                    Usuario usuarioRenta = null;
+                    for (Usuario usuario : libreria.getUsuarios()) {
+                        if (usuario.getNombre().equals(nombreRenta)) {
+                            usuarioRenta = usuario;
+                            break;
+                        }
+                    }
+
+                    Libro libroRenta = null;
+                    for (Libro libro : libreria.getLibros()) {
+                        if (libro.getTitulo().equals(tituloRenta)) {
+                            libroRenta = libro;
+                            break;
+                        }
+                    }
+
+                    if (usuarioRenta != null && libroRenta != null) {
+                        libreria.realizarRenta(usuarioRenta, libroRenta);
+                    } else {
+                        System.out.println("Usuario o libro no encontrados.");
+                    }
+                    break;
+
+                case 4:
+                    libreria.listarUsuariosRegistrados();
+                    break;
+
+                case 5:
+                    libreria.listarLibrosRegistrados();
+                    break;
+
+                case 6:
+                    libreria.listarUsuariosConLibros();
+                    break;
+
+                case 7:
+                    libreria.listarLibrosNoRentados();
+                    break;
+
+                case 8:
+                    libreria.listarLibrosRentados();
+                    break;
+
+                case 9:
+                    System.out.println("Saliendo del programa. ¡Hasta luego!");
+                    System.exit(0);
+                    break;
+
+                default:
+                    System.out.println("Opción no válida. Inténtelo de nuevo.");
+            }
+        }
+    }
+}
